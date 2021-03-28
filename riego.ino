@@ -11,6 +11,7 @@ RTC_DS1307 rtc;
 const int sprinklerPin1 = 9;
 const int sprinklerPin2 = 10;
 const int sprinklerPin3 = 8;
+const int sprinklerPin4 = 7;
 int activeSprinkler = 0;
 
 // Modes
@@ -60,10 +61,12 @@ void setup() {
   pinMode(sprinklerPin1, OUTPUT);
   pinMode(sprinklerPin2, OUTPUT);
   pinMode(sprinklerPin3, OUTPUT);
+  pinMode(sprinklerPin4, OUTPUT);
   digitalWrite(sprinklerPin1, HIGH);
   digitalWrite(sprinklerPin2, HIGH);
   digitalWrite(sprinklerPin3, HIGH);
-
+  digitalWrite(sprinklerPin4, HIGH);
+  
   // Setup mode
   pinMode(modeLedPin, OUTPUT);
   modeButton.begin();
@@ -117,18 +120,27 @@ void setActiveSprinklerOnce(int index) {
       digitalWrite(sprinklerPin1, LOW);
       digitalWrite(sprinklerPin2, HIGH);
       digitalWrite(sprinklerPin3, HIGH);
+      digitalWrite(sprinklerPin4, HIGH);
     } else if (activeSprinkler == 2) {
       digitalWrite(sprinklerPin1, HIGH);
       digitalWrite(sprinklerPin2, LOW);
       digitalWrite(sprinklerPin3, HIGH);
+      digitalWrite(sprinklerPin4, HIGH);
     } else if (activeSprinkler == 3) {
       digitalWrite(sprinklerPin1, HIGH);
       digitalWrite(sprinklerPin2, HIGH);
       digitalWrite(sprinklerPin3, LOW);
+      digitalWrite(sprinklerPin4, HIGH);
+    } else if (activeSprinkler == 3) {
+      digitalWrite(sprinklerPin1, HIGH);
+      digitalWrite(sprinklerPin2, HIGH);
+      digitalWrite(sprinklerPin3, HIGH);
+      digitalWrite(sprinklerPin4, LOW);
     } else {
       digitalWrite(sprinklerPin1, HIGH);
       digitalWrite(sprinklerPin2, HIGH);
       digitalWrite(sprinklerPin3, HIGH);
+      digitalWrite(sprinklerPin4, HIGH);
     }
   }
 }
@@ -144,9 +156,9 @@ bool updateSprinklers(void *) {
   Serial.println(minute);
   
   if (
-    (activeMode == 1 && (hour == 10 || hour == 20)) || // Mode 1
-    (activeMode == 2 && (hour == 10 || hour == 12 || hour == 20)) || // Mode 2
-    (activeMode == 3 && (hour == 10 || hour == 12 || hour == 15 || hour == 17 || hour == 20)) // Mode 3
+    (activeMode == 1 && (hour == 8 || hour == 20)) || // Mode 1
+    (activeMode == 2 && (hour == 8 || hour == 12 || hour == 20)) || // Mode 2
+    (activeMode == 3 && (hour == 8 || hour == 12 || hour == 15 || hour == 17 || hour == 20)) // Mode 3
   ) {
     if (minute >= 0 && minute <= 19) {
       setActiveSprinklerOnce(1);
