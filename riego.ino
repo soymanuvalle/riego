@@ -8,9 +8,9 @@ Timer<2> timer;
 RTC_DS1307 rtc;
 
 // Sprinklers
-const int sprinklerPin1 = 8;
-const int sprinklerPin2 = 9;
-const int sprinklerPin3 = 10;
+const int sprinklerPin1 = 9;
+const int sprinklerPin2 = 10;
+const int sprinklerPin3 = 8;
 int activeSprinkler = 0;
 
 // Modes
@@ -28,6 +28,7 @@ void setup() {
     while (!Serial); // wait for serial port to connect. Needed for native USB
   #endif
 
+  Serial.println("");
   Serial.println(F("----------------------------------------------------"));
   Serial.println(F("            SISTEMA DE RIEGO AUTOMATICO             "));
   Serial.println(F("                       v1.0                         "));
@@ -40,10 +41,8 @@ void setup() {
     abort();
   }
 
-  if (!rtc.isrunning()) {
-    Serial.println("RTC is NOT running, let's set the time!");
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  }
+  // Set the RTC datetime to the last time this sketch was compiled
+//  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 
   // Set active mode from EEPROM storage
   int storedActiveMode = EEPROM.read(0);
@@ -111,8 +110,10 @@ bool updateModeLed(void *) {
 void setActiveSprinklerOnce(int index) {
   if (activeSprinkler != index) {
     activeSprinkler = index;
-    Serial.println("Test");
-    /*if (activeSprinkler == 1) {
+    Serial.print("Active sprinkler: ");
+    Serial.println(activeSprinkler);
+    
+    if (activeSprinkler == 1) {
       digitalWrite(sprinklerPin1, LOW);
       digitalWrite(sprinklerPin2, HIGH);
       digitalWrite(sprinklerPin3, HIGH);
@@ -128,7 +129,7 @@ void setActiveSprinklerOnce(int index) {
       digitalWrite(sprinklerPin1, HIGH);
       digitalWrite(sprinklerPin2, HIGH);
       digitalWrite(sprinklerPin3, HIGH);
-    }*/
+    }
   }
 }
 
@@ -137,10 +138,15 @@ bool updateSprinklers(void *) {
   const int hour = date.hour();
   const int minute = date.minute();
 
+  Serial.print("Hour: ");
+  Serial.print(hour);
+  Serial.print(" Minute: ");
+  Serial.println(minute);
+  
   if (
-    (activeMode == 1 && (hour == 8 || hour == 20)) || // Mode 1
-    (activeMode == 2 && (hour == 8 || hour == 12 || hour == 20)) || // Mode 2
-    (activeMode == 3 && (hour == 8 || hour == 12 || hour == 15 || hour == 17 || hour == 20)) // Mode 3
+    (activeMode == 1 && (hour == 10 || hour == 20)) || // Mode 1
+    (activeMode == 2 && (hour == 10 || hour == 12 || hour == 20)) || // Mode 2
+    (activeMode == 3 && (hour == 10 || hour == 12 || hour == 15 || hour == 17 || hour == 20)) // Mode 3
   ) {
     if (minute >= 0 && minute <= 19) {
       setActiveSprinklerOnce(1);
