@@ -42,7 +42,11 @@ void setup() {
     abort();
   }
 
-  // Set the RTC datetime to the last time this sketch was compiled
+  if (!rtc.isrunning()) {
+    Serial.println("RTC is NOT running, let's set the time!");
+    // Set the RTC datetime to the last time this sketch was compiled
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
 //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 
   // Set active mode from EEPROM storage
@@ -73,7 +77,7 @@ void setup() {
 
   // Timers
   timer.every(200, updateModeLed);
-  timer.every(1000, updateSprinklers);
+  timer.every(500, updateSprinklers);
 }
 
 // Loop
@@ -84,7 +88,7 @@ void loop() {
   if (modeButton.released()) {
     if (activeMode == 3) activeMode = 1;
     else activeMode++;
-    //EEPROM.write(0, activeMode);
+    EEPROM.write(0, activeMode);
     Serial.println("Active mode: " + (String)activeMode);
 
     // Reset mode led
